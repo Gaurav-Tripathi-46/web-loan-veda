@@ -1,4 +1,6 @@
+# =========================
 # Logs
+# =========================
 logs
 *.log
 npm-debug.log*
@@ -7,18 +9,96 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# =========================
+# Dependencies
+# =========================
+node_modules/
 
-# Editor directories and files
+# =========================
+# Build Outputs
+# =========================
+dist/
+dist-ssr/
+build/
+coverage/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
+.env.*.local
+
+# Keep example env file
+!.env.example
+
+# =========================
+# Cache
+# =========================
+.cache/
+.parcel-cache/
+.vite/
+.eslintcache
+.stylelintcache
+
+# =========================
+# Testing
+# =========================
+coverage/
+.nyc_output/
+
+# =========================
+# TypeScript
+# =========================
+*.tsbuildinfo
+
+# =========================
+# IDEs & Editors
+# =========================
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Temporary Files
+# =========================
+tmp/
+temp/
+*.tmp
+
+# =========================
+# React Native / Expo
+# (Safe to keep even if unused)
+# =========================
+.expo/
+.expo-shared/
+
+# =========================
+# Package Managers
+# =========================
+.pnp
+.pnp.js
+
+# =========================
+# Misc
+# =========================
+*.local
+.vercel
+.netlify
