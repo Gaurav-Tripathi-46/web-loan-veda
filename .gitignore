@@ -102,3 +102,4 @@ temp/
 *.local
 .vercel
 .netlify
+DEPLOY-HOSTINGER.md
