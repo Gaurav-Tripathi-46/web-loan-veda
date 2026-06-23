@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
  * Supported formats: jpg, png, webp.
  */
 export const POSTER_PATHS = [
-  '/src/assets/posters/poster1.png',
+  '/public/images/poster1.png',
   '/src/assets/posters/poster2.jpg',
   '/src/assets/posters/poster3.jpg',
 ];
