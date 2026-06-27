@@ -36,6 +36,18 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [t]);
 
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   const handleLinkClick = (id) => {
     setMobileOpen(false);
     const element = document.getElementById(id);
@@ -48,6 +60,7 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Spacer to prevent content overlap */}
       <div className="h-16 lg:h-20" />
 
       <nav
@@ -60,18 +73,18 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
 
-            {/* Logo with Circular Border on Hover */}
+            {/* Logo with Circular Border on Hover - Always show text on mobile */}
             <a
               href="#home"
               onClick={(e) => {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="group flex items-center gap-3 cursor-pointer shrink-0"
+              className="group flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0"
             >
-              {/* Circular Logo with Orange Hover Border */}
+              {/* Circular Logo */}
               <div className="relative">
-                <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border-2 border-transparent hover:border-saffron-500 hover:shadow-md transition-all duration-300 flex items-center justify-center overflow-hidden">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-14 lg:h-14 rounded-full border-2 border-transparent hover:border-saffron-500 hover:shadow-md transition-all duration-300 flex items-center justify-center overflow-hidden">
                   <img 
                     src="/images/logo.png"
                     alt="Loan Veda"
@@ -80,18 +93,18 @@ export default function Navbar() {
                 </div>
               </div>
               
-              {/* Text Logo */}
-              <div className="hidden sm:block">
-                <span className="font-bold text-lg lg:text-xl tracking-tight text-gray-900">
+              {/* Text Logo - Always visible on mobile */}
+              <div className="block">
+                <span className="font-bold text-sm sm:text-base lg:text-xl tracking-tight text-gray-900">
                   Loan Veda
                 </span>
-                <p className="text-xs leading-tight text-gray-500">
+                <p className="text-[8px] sm:text-[10px] lg:text-xs leading-tight text-gray-500 block">
                   Apno Jaisi Guidance
                 </p>
               </div>
             </a>
 
-            {/* Desktop Navigation with Orange Hover Effects */}
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-1 lg:gap-2">
               {navLinks.map((link) => (
                 <a
@@ -118,9 +131,8 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Right Side Actions with Orange Hover Effects */}
+            {/* Right Side Actions */}
             <div className="hidden md:flex items-center gap-3">
-              {/* Language Toggle */}
               <div className="relative">
                 <button
                   onClick={toggleLanguage}
@@ -132,7 +144,6 @@ export default function Navbar() {
                 </button>
               </div>
 
-              {/* CTA Button - Orange on Hover */}
               <a
                 href="#booking"
                 onClick={(e) => {
@@ -156,26 +167,38 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Drawer */}
+        {/* Mobile Drawer - Fixed Overlay */}
         <>
+          {/* Improved overlay with better blur */}
           <div
-            className={`fixed inset-0 bg-black/20 backdrop-blur-sm transition-all duration-300 md:hidden ${
+            className={`fixed inset-0 bg-black/30 backdrop-blur-sm transition-all duration-300 md:hidden ${
               mobileOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
             }`}
             onClick={() => setMobileOpen(false)}
+            style={{ 
+              zIndex: 9999,
+              WebkitBackdropFilter: 'blur(4px)',
+              backdropFilter: 'blur(4px)'
+            }}
           />
 
+          {/* Drawer with smooth animation */}
           <div
-            className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden ${
+            className={`fixed top-0 right-0 h-full w-[280px] sm:w-80 bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden ${
               mobileOpen ? 'translate-x-0' : 'translate-x-full'
             }`}
-            style={{ zIndex: 10000 }}
+            style={{ 
+              zIndex: 10000,
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              height: '100vh'
+            }}
           >
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col min-h-full">
               {/* Drawer Header */}
-              <div className="flex items-center justify-between p-5 border-b border-gray-100">
+              <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100">
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-full border-2 border-transparent flex items-center justify-center overflow-hidden">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-transparent flex items-center justify-center overflow-hidden">
                     <img 
                       src="/images/logo.png"
                       alt="Loan Veda"
@@ -183,8 +206,8 @@ export default function Navbar() {
                     />
                   </div>
                   <div>
-                    <span className="font-bold text-gray-900">Loan Veda</span>
-                    <p className="text-xs text-gray-500">Apno Jaisi Guidance</p>
+                    <span className="font-bold text-gray-900 text-sm sm:text-base">Loan Veda</span>
+                    <p className="text-[10px] sm:text-xs text-gray-500">Apno Jaisi Guidance</p>
                   </div>
                 </div>
                 <button
@@ -195,8 +218,8 @@ export default function Navbar() {
                 </button>
               </div>
 
-              {/* Drawer Navigation with Orange Hover */}
-              <div className="flex-1 py-6 px-4">
+              {/* Drawer Navigation */}
+              <div className="flex-1 py-4 sm:py-6 px-3 sm:px-4">
                 {navLinks.map((link) => (
                   <a
                     key={link.id}
@@ -205,7 +228,7 @@ export default function Navbar() {
                       e.preventDefault();
                       handleLinkClick(link.id);
                     }}
-                    className={`block py-3 text-base font-medium transition-colors rounded-lg px-3 ${
+                    className={`block py-2.5 sm:py-3 text-sm sm:text-base font-medium transition-colors rounded-lg px-3 ${
                       activeSection === link.id
                         ? 'bg-blue-50 text-blue-900'
                         : 'text-gray-700 hover:text-saffron-600 hover:bg-orange-50'
@@ -217,7 +240,7 @@ export default function Navbar() {
               </div>
 
               {/* Drawer Footer */}
-              <div className="p-5 border-t border-gray-100 space-y-3">
+              <div className="p-4 sm:p-5 border-t border-gray-100 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Language</span>
                   <button
@@ -234,7 +257,7 @@ export default function Navbar() {
                     e.preventDefault();
                     handleLinkClick('booking');
                   }}
-                  className="block w-full text-center bg-blue-900 text-white font-semibold rounded-lg px-5 py-3 text-sm hover:bg-saffron-500 hover:text-gray-900 transition-colors"
+                  className="block w-full text-center bg-blue-900 text-white font-semibold rounded-lg px-5 py-2.5 sm:py-3 text-sm hover:bg-saffron-500 hover:text-gray-900 transition-colors"
                 >
                   {t.nav.bookCall}
                 </a>
