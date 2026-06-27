@@ -7,7 +7,11 @@ const icons = [Home, User, ArrowRightLeft, Plus, Car, GraduationCap, Briefcase, 
 export default function ProductsSection() {
   const { t } = useLanguage();
   const sectionRef = useRef(null);
+  const scrollContainerRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,12 +31,64 @@ export default function ProductsSection() {
     return () => observer.disconnect();
   }, []);
 
+  // Check if screen is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (t.products.items) {
+      setTotalProducts(t.products.items.length);
+    }
+  }, [t.products.items]);
+
+  // Handle scroll to update active dot
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = 320 + 24; // card width + gap
+      const newIndex = Math.round(scrollLeft / cardWidth);
+      
+      // Clamp the index to valid range
+      const clampedIndex = Math.min(Math.max(0, newIndex), totalProducts - 1);
+      setActiveIndex(clampedIndex);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    
+    // Initial calculation
+    handleScroll();
+
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [totalProducts]);
+
   // Product categories with enhanced data
   const productCategories = [
     { label: "Government Employees", badge: "Special Offer" },
     { label: "Working Professionals", badge: "Quick Approval" },
     { label: "Balance Transfer", badge: "Save ₹50k+" },
   ];
+
+  // Scroll to specific card when dot is clicked
+  const scrollToCard = (index) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    const cardWidth = 320 + 24; // card width + gap
+    container.scrollTo({
+      left: index * cardWidth,
+      behavior: 'smooth'
+    });
+    setActiveIndex(index);
+  };
 
   return (
     <section 
@@ -60,65 +116,96 @@ export default function ProductsSection() {
           </p>
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {t.products.items.map((item, i) => {
-            const Icon = icons[i % icons.length];
-            const category = productCategories[i % productCategories.length];
-            
-            return (
-              <div
-                key={i}
-                className={`group relative bg-white rounded-xl border border-gray-100 p-6 transition-all duration-300 hover:shadow-lg hover:border-gray-200 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
-                style={{ transitionDelay: `${i * 100}ms` }}
-              >
-                {/* Badge for special products */}
-                {i < 3 && (
-                  <div className="absolute -top-2 -right-2">
-                    <div className="bg-gradient-to-r from-saffron-500 to-saffron-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-                      {category.badge}
-                    </div>
-                  </div>
-                )}
-
-                {/* Icon with gradient background */}
-                <div className="relative mb-5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300">
-                    <Icon size={22} className="text-white" />
-                  </div>
-                </div>
-
-                {/* Title */}
-                <h3 className="text-gray-900 font-semibold text-xl mb-2 tracking-tight">
-                  {item.name}
-                </h3>
+        {/* Products Horizontal Scrollable Grid */}
+        <div className="relative">
+          <div 
+            ref={scrollContainerRef}
+            className="overflow-x-auto overflow-y-hidden pb-4 hide-scrollbar"
+            style={{ scrollBehavior: 'smooth' }}
+          >
+            <div className="flex gap-6 lg:gap-8" style={{ minWidth: 'max-content' }}>
+              {t.products.items.map((item, i) => {
+                const Icon = icons[i % icons.length];
+                const category = productCategories[i % productCategories.length];
                 
-                {/* Description */}
-                <p className="text-gray-500 text-sm leading-relaxed mb-4">
-                  {item.desc}
-                </p>
+                return (
+                  <div
+                    key={i}
+                    className={`group relative bg-white rounded-xl border border-gray-100 p-6 transition-all duration-300 hover:shadow-lg hover:border-gray-200 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+                    style={{ 
+                      transitionDelay: `${i * 100}ms`,
+                      width: '320px',
+                      flexShrink: 0,
+                      paddingTop: '32px'
+                    }}
+                  >
+                    {/* Badge for special products - Repositioned to top-right with proper spacing */}
+                    {i < 3 && (
+                      <div className="absolute top-3 right-3 z-10">
+                        <span className="inline-block bg-gradient-to-r from-saffron-500 to-saffron-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm whitespace-nowrap">
+                          {category.badge}
+                        </span>
+                      </div>
+                    )}
 
-                {/* Key feature highlight */}
-                <div className="flex items-center gap-2 mb-5 text-xs text-gray-400 border-t border-gray-100 pt-4">
-                  <Clock size={12} />
-                  <span>Approval in 24hrs</span>
-                  <span className="w-1 h-1 rounded-full bg-gray-300" />
-                  <TrendingUp size={12} />
-                  <span>Starting @ 8.5% p.a.</span>
-                </div>
+                    {/* Icon with gradient background */}
+                    <div className="relative mb-5">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300">
+                        <Icon size={22} className="text-white" />
+                      </div>
+                    </div>
 
-                {/* Learn More Link */}
-                <a 
-                  href="#booking" 
-                  className="inline-flex items-center gap-2 text-sm font-medium text-blue-900 hover:text-blue-700 transition-colors group-hover:gap-3"
-                >
-                  <span>{t.products.learnMore}</span>
-                  <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
-                </a>
-              </div>
-            );
-          })}
+                    {/* Title */}
+                    <h3 className="text-gray-900 font-semibold text-xl mb-2 tracking-tight pr-16">
+                      {item.name}
+                    </h3>
+                    
+                    {/* Description */}
+                    <p className="text-gray-500 text-sm leading-relaxed mb-4">
+                      {item.desc}
+                    </p>
+
+                    {/* Key feature highlight */}
+                    <div className="flex items-center gap-2 mb-5 text-xs text-gray-400 border-t border-gray-100 pt-4">
+                      <Clock size={12} />
+                      <span>Approval in 24hrs</span>
+                      <span className="w-1 h-1 rounded-full bg-gray-300" />
+                      <TrendingUp size={12} />
+                      <span>Starting @ 8.5% p.a.</span>
+                    </div>
+
+                    {/* Learn More Link */}
+                    <a 
+                      href="#booking" 
+                      className="inline-flex items-center gap-2 text-sm font-medium text-blue-900 hover:text-blue-700 transition-colors group-hover:gap-3"
+                    >
+                      <span>{t.products.learnMore}</span>
+                      <ArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" />
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Scroll Indicators - Interactive Dots - Only show on mobile */}
+          {isMobile && (
+            <div className="flex justify-center gap-2 mt-6">
+              {t.products.items.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => scrollToCard(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    activeIndex === index 
+                      ? 'bg-blue-900 w-6' 
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Scroll to product ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Bottom Trust Banner */}
@@ -156,6 +243,17 @@ export default function ProductsSection() {
           </div>
         </div>
       </div>
+
+      {/* Hide scrollbar styles */}
+      <style jsx>{`
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </section>
   );
 }
