@@ -10,3 +10,124 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
+
+/* 
+  ========================================
+  FIXED NAVBAR SCROLL OFFSET
+  Prevents content from hiding under fixed navbar
+  ========================================
+*/
+
+/* For all section elements that the navbar links to */
+section[id],
+[id="home"],
+[id="products"],
+[id="how-it-works"],
+[id="about"],
+[id="booking"] {
+  scroll-margin-top: 80px;
+}
+
+/* Mobile adjustment - smaller navbar height */
+@media (max-width: 768px) {
+  section[id],
+  [id="home"],
+  [id="products"],
+  [id="how-it-works"],
+  [id="about"],
+  [id="booking"] {
+    scroll-margin-top: 64px;
+  }
+}
+
+/* 
+  ========================================
+  UTILITY CLASSES FOR FINANCIAL DASHBOARDS
+  ========================================
+*/
+
+/* Smooth number transitions for financial data */
+.smooth-number {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+/* Card hover effects - professional grade */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+}
+
+/* Subtle text gradient for headings */
+.text-gradient {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Trust badge styling */
+.trust-badge {
+  transition: all 0.2s ease;
+}
+
+.trust-badge:hover {
+  transform: translateX(4px);
+}
+
+/* 
+  ========================================
+  ACCESSIBILITY & FOCUS STATES
+  ========================================
+*/
+
+/* Improved focus outline for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove default focus for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 
+  ========================================
+  CUSTOM SCROLLBAR (Optional - Fintech Style)
+  ========================================
+*/
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 
+  ========================================
+  SELECTION COLOR
+  ========================================
+*/
+
+::selection {
+  background-color: #fef3c7;
+  color: #1e3a8a;
+}
